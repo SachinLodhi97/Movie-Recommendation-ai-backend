@@ -54,21 +54,33 @@ def get_trailer(movie_id):
     return None
 
 def get_movies_by_category(category):
-    params = {"api_key": TMDB_API_KEY, "sort_by": "popularity.desc"}
+    params = {
+        "api_key": TMDB_API_KEY,
+        "sort_by": "popularity.desc",
+        "primary_release_date.gte": "2025-01-01",  # 🔥 widen range
+        "primary_release_date.lte": "2026-12-31"
+    }
 
+    # CATEGORY FIX
     if category == "bollywood":
         params["with_original_language"] = "hi"
+
     elif category == "tollywood":
+        # 🔥 FIX: better filtering for Telugu cinema
         params["with_original_language"] = "te"
+
     elif category == "south":
-        params["with_origin_country"] = "IN"
+        # 🔥 better coverage instead of only IN
+        params["with_original_language"] = "ta|te|ml|kn"
+
     else:
         params["with_original_language"] = "en"
 
     data = fetch(f"{BASE_URL}/discover/movie", params)
 
     movies = []
-    for m in data.get("results", [])[:10]:
+
+    for m in data.get("results", [ ]):  # ❗ remove [:10] first
         poster_path = m.get("poster_path")
         poster = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else None
 
@@ -77,7 +89,8 @@ def get_movies_by_category(category):
             "poster": poster,
             "id": m.get("id")
         })
-    return movies
+
+    return movies[:15]  # 🔥 final limit here
 
 # ------------------------
 # Routes
