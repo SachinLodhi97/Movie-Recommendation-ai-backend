@@ -28,11 +28,11 @@ class MovieRecommender:
 
             recs = cluster_movies.sample(n=n)[['title', 'poster_path']].to_dict(orient='records')
 
-            return recs   # ✅ FIX: sirf list return
+            return recs  
         except Exception as e:
             print(f"❌ Recommendation error: {e}")
             return []
         
 
-# instance
+
 recommender = MovieRecommender()
